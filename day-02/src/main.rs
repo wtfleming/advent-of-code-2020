@@ -12,12 +12,18 @@ struct PasswordInfo {
 fn main() -> Result<(), Error> {
     let password_infos = input_to_password_info()?;
     part_one(&password_infos);
+    part_two(&password_infos);
 
     Ok(())
 }
 
-fn part_one(numbers: &[PasswordInfo]) {
-    let results: Vec<&PasswordInfo> = numbers.iter().filter(|x| is_password_valid(x)).collect();
+fn part_one(input: &[PasswordInfo]) {
+    let results: Vec<&PasswordInfo> = input.iter().filter(|x| is_password_valid(x)).collect();
+    println!("{}", results.len());
+}
+
+fn part_two(input: &[PasswordInfo]) {
+    let results: Vec<&PasswordInfo> = input.iter().filter(|x| is_password_valid_two(x)).collect();
     println!("{}", results.len());
 }
 
@@ -46,11 +52,19 @@ fn input_to_password_info() -> Result<Vec<PasswordInfo>, Error> {
 fn is_password_valid(pw: &PasswordInfo) -> bool {
     let mut pass = pw.password.clone();
     pass.retain(|c| c == pw.letter);
-
-    // println!(
-    //     "{} {} {} {} {}",
-    //     pw.letter, pw.min, pw.max, pw.password, pass
-    // );
-
     pass.len() >= pw.min && pass.len() <= pw.max
+}
+
+fn is_password_valid_two(pw: &PasswordInfo) -> bool {
+    let first = pw.password.chars().nth(pw.min - 1).unwrap();
+    let second = pw.password.chars().nth(pw.max - 1).unwrap();
+
+    if first != pw.letter && second != pw.letter {
+        return false;
+    }
+    if first == pw.letter && second == pw.letter {
+        return false;
+    }
+
+    true
 }
