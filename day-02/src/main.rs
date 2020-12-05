@@ -1,6 +1,6 @@
 use regex::Regex;
-use std::fs::File;
-use std::io::{BufRead, BufReader, Error};
+use std::fs;
+use std::io::Error;
 
 struct PasswordInfo {
     min: usize,
@@ -28,15 +28,13 @@ fn part_two(input: &[PasswordInfo]) {
 }
 
 fn input_to_password_info() -> Result<Vec<PasswordInfo>, Error> {
-    let input = File::open("input.txt")?;
-    let buffered = BufReader::new(input);
-    let numbers = buffered
+    let input = fs::read_to_string("input.txt")?;
+    let numbers = input
         .lines()
         .map(|line| {
             let re = Regex::new(r"(\d+)-(\d+) (.): (.+)").unwrap();
 
-            let x = line.unwrap();
-            let cap = re.captures(&x).unwrap();
+            let cap = re.captures(&line).unwrap();
 
             PasswordInfo {
                 min: cap[1].parse::<usize>().unwrap(),
